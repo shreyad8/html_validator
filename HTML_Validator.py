@@ -77,7 +77,7 @@ def _extract_tags(html):
 
         if inside:
             if html[i] != ' ':
-                    tag += html[i]
+                tag += html[i]
 
         if inside:
             if html[i] == '>':
