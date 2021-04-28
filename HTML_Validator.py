@@ -21,8 +21,7 @@ def validate_html(html):
     # that you will have to keep track of not just the 3 types of parentheses,
     # but arbitrary text located between the html tags
 
-    begin_stack = []
-    end_stack = []
+    stack = []
     tags = _extract_tags(html)
 
     for tag in tags:
@@ -32,20 +31,15 @@ def validate_html(html):
                 end_tag = True
 
         if end_tag:
-            end_stack.append(tag)
+            if len(stack) == 0:
+                return False
+            opening_tag = stack.pop()
+            if opening_tag[1:-1] != tag[2:-1]:
+                return False
         else:
-            begin_stack.append(tag)
+            stack.append(tag)
 
-    while len(begin_stack) != 0:
-        if len(end_stack) == 0:
-            return False
-
-        begin_tag = begin_stack.pop()
-        end_tag = end_stack.pop()
-        if begin_tag[1:-1] != end_tag[2:-1]:
-            return False
-
-    if len(begin_stack) == 0 and len(end_stack) == 0:
+    if len(stack) == 0:
         return True
     else:
         return False
@@ -66,7 +60,6 @@ def _extract_tags(html):
     '''
 
     tags = []
-    empty_tags = []
     tag = None
     inside = False
 
@@ -85,6 +78,6 @@ def _extract_tags(html):
                 inside = False
 
     if inside:
-        return empty_tags
+        tags.append("error")
 
     return tags
